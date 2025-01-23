@@ -1,20 +1,11 @@
 import pygame
+import obstacles
 
-class Hero(pygame.sprite.Sprite):
-
-    def __init__(self, x, filename):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(
-            pygame.image.load(filename).convert_alpha(), (50, 50)
-        )
-        self.rect = self.image.get_rect(center=(x, 0))
-        self.speed = 10
-
-    def move_up(self):
-        self.rect.y -= self.speed
-
-    def move_down(self):
-        self.rect.y += self.speed
+class Hero:
+    def __init__(self, x, y, image_path):
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.speed = 5
 
     def move_left(self):
         self.rect.x -= self.speed
@@ -22,6 +13,18 @@ class Hero(pygame.sprite.Sprite):
     def move_right(self):
         self.rect.x += self.speed
 
-    def jump(self, h=100):
-        for i in range(0, 10):
-            self.rect.y -= h / 10
+    def move_up(self):
+        self.rect.y -= self.speed
+
+    def move_down(self):
+        self.rect.y += self.speed
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+    def check_collision(self, walls):
+        for wall in walls:
+            if self.rect.colliderect(wall.rect):
+                print(f"Коллизия с стеной на x={wall.rect.x}, y={wall.rect.y}")
+                return True
+        return False

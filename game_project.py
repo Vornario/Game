@@ -1,47 +1,65 @@
 import pygame
 import heroes
 import obstacles
+import sys
 
 pygame.init()
 pygame.display.set_caption("Fecalis revenge")
 pygame.display.set_icon(pygame.image.load("logo.bmp"))
 
 BLACK = (0, 0, 0)
-W, H = 1000, 570
 
-sc = pygame.display.set_mode((W, H))
+
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Fecalis Revenge")
 clock = pygame.time.Clock()
-FPS = 60
 
 
-hero = heroes.Hero(40, "hero.png")
+hero = heroes.Hero(30, 30, "hero.jpg")
 
 bulls = []
+
+
+walls = [
+    obstacles.Wall(0, 0, SCREEN_WIDTH, 20),  # Верхняя стена
+    obstacles.Wall(0, SCREEN_HEIGHT - 20, SCREEN_WIDTH, 20),  # Нижняя стена
+    obstacles.Wall(0, 0, 20, SCREEN_HEIGHT),  # Левая стена
+    obstacles.Wall(SCREEN_WIDTH - 20, 0, 20, SCREEN_HEIGHT),  # Правая стена
+    obstacles.Wall(200, 200, 100, 20),  # Пример внутренней стены
+]
+
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            exit()
-    keys = pygame.key.get_pressed()
+            pygame.quit()
+            sys.exit()
 
+    # Обработка нажатий клавиш
+    keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
         hero.move_left()
-    elif keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT]:
         hero.move_right()
-    elif keys[pygame.K_DOWN]:
-        hero.move_down()
-    elif keys[pygame.K_UP]:
+    if keys[pygame.K_UP]:
         hero.move_up()
+    if keys[pygame.K_DOWN]:
+        hero.move_down()
+        
+    # Очистка экрана
+    screen.fill(BLACK)
 
-        if event.key == pygame.K_f:
-            bulls.append(
-                obstacles.Bullet(hero.rect.x, hero.rect.y, "bullet.png", hero)
-            )
+    # Отрисовка стен
+    for wall in walls:
+        wall.draw(screen)
 
-    sc.fill(BLACK)
-    sc.blit(hero.image, hero.rect)
-    for bull in bulls:
-        sc.blit(bull.image, bull.rect)
-        bull.update()
-    pygame.display.update()
-    clock.tick(FPS)
+    # Отрисовка персонажа
+    hero.draw(screen)
+
+    # Обновление экрана
+    
+    pygame.display.flip()
+    clock.tick(60)
+    
